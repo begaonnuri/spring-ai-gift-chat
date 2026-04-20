@@ -1,6 +1,7 @@
 package gift.recommendation;
 
 import gift.prompt.PromptLoader;
+import gift.request.RequestIdGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +16,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RecommendationServiceTest {
+
+    @Mock
+    private RequestIdGenerator requestIdGenerator;
 
     @Mock
     private PromptLoader promptLoader;
@@ -33,7 +37,7 @@ class RecommendationServiceTest {
         when(builder.defaultSystem("system prompt")).thenReturn(builder);
         when(builder.build()).thenReturn(chatClient);
 
-        sut = new RecommendationService(promptLoader, builder);
+        sut = new RecommendationService(requestIdGenerator, promptLoader, builder);
     }
 
     @Test
@@ -42,6 +46,7 @@ class RecommendationServiceTest {
         var request = new RecommendationRequest("sessionId", message);
         var response = "선물 추천 응답";
 
+        when(requestIdGenerator.generate()).thenReturn("requestId");
         when(chatClient.prompt().user(message).call().content()).thenReturn(response);
         RecommendationResponse recommend = sut.recommend(request);
 
@@ -53,6 +58,7 @@ class RecommendationServiceTest {
         var message = "친구 생일 선물 추천해줘";
         var request = new RecommendationRequest("sessionId", message);
 
+        when(requestIdGenerator.generate()).thenReturn("requestId");
         when(chatClient.prompt().user(message).call().content()).thenThrow(new RuntimeException("ChatClient error"));
 
         assertThatThrownBy(() -> sut.recommend(request))
