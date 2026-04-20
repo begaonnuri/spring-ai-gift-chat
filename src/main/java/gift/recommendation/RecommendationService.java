@@ -16,8 +16,11 @@ public class RecommendationService {
     }
 
     public RecommendationResponse recommend(RecommendationRequest request) {
-        var content = client.prompt().user(request.message()).call().content();
-
-        return new RecommendationResponse("requestId", content, 0L);
+        try {
+            var content = client.prompt().user(request.message()).call().content();
+            return new RecommendationResponse("requestId", content, 0L);
+        } catch (RuntimeException e) {
+            throw new ChatClientException(e);
+        }
     }
 }

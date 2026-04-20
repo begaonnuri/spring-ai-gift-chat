@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Answers.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.when;
 
@@ -45,5 +46,16 @@ class RecommendationServiceTest {
         RecommendationResponse recommend = sut.recommend(request);
 
         assertThat(recommend.message()).isEqualTo(response);
+    }
+
+    @Test
+    void recommend_chatClientError() {
+        var message = "친구 생일 선물 추천해줘";
+        var request = new RecommendationRequest("sessionId", message);
+
+        when(chatClient.prompt().user(message).call().content()).thenThrow(new RuntimeException("ChatClient error"));
+
+        assertThatThrownBy(() -> sut.recommend(request))
+            .isInstanceOf(ChatClientException.class);
     }
 }
