@@ -1,0 +1,5 @@
+spring:
+  application.name: spring-ai-gift
+  ai.google.genai:
+    api-key: YOUR_API_KEY
+    chat.options.model: gemini-2.5-flash-lite
