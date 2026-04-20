@@ -1,6 +1,6 @@
 package gift;
 
-import gift.recommendation.ChatClientException;
+import gift.chat.ChatClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
